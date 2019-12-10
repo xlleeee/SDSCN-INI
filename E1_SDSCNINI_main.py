@@ -1,4 +1,4 @@
-#ICECN：在路由节点上进行网内计算和缓存，能够进行沿路缓存和计算。
+#E1_SDSCNINI_main
 
 import math
 import random
@@ -9,13 +9,9 @@ import numpy as np
 import csv
 import sys
 
-#from p1_NDN_5 import NDN, get_FIBs, print_FIBs, initial_Global_FIB, update_Global_FIB, delete_Global_FIB
-#from p1_NDN_5_unlock import NDN, get_FIBs, print_FIBs, initial_Global_FIB, update_Global_FIB, delete_Global_FIB
 from E1_SDSCNINI import *
 from topo_3 import *
 
-#req_p_num = int(sys.argv[1])
-#req_p_num = 1
 
 req_s_num = int(sys.argv[1])
 
@@ -49,11 +45,6 @@ def produce_ps():
 				ri[1]['model'].CS += (tem_c_name_full,tem_c_size)
 		tem_line = f.readline()
 	f.close()
-	'''
-	for ri in G.nodes(data=True):
-		print('%s CS:' % ri[1]['model'].label)
-		ri[1]['model'].print__content_store()
-	'''
 	
 	
 # __main__
@@ -67,47 +58,13 @@ if __name__ == '__main__':
 	# produce parameter contents for each Pi
 	produce_ps()
 	
-	'''
-	print('service_set:')
-	for ri in G.nodes(data=True):
-		if ri[1]['model'].node_type == 'r':
-			print(ri[1]['model'].label)
-			print(ri[1]['model'].service_set)
-	
-	print('parameters for each Pi:')
-	for ri in G.nodes(data=True):
-		if ri[1]['model'].node_type == 'p':
-			print(ri[1]['model'].label)
-			print(ri[1]['model'].CS)
-	
-	print('requests for each host:')
-	for ri in G.nodes(data=True):
-		if ri[1]['model'].node_type == 'h':
-			print(ri[1]['model'].label)
-			print(ri[1]['model'].requests)
-	'''
 	# ----------------FIB initial --------------------
 	
 	Global_FIB = {}
-	# Global_FIB : {'R1': ['prefix1',(('H1','P1'),('H1','R1','R3'),..),'prefix2',(('H1','R1'),..),...], 'R2': [],...}
-	# FIB : ('prefix1',(('H1','P1'),('H1','R1','R3'),..),'prefix2',(('H1','R1'),..),...)issue_init_interests(('/exec/dec/s1|/p1|/p2|/p3/',))
 	
-	# 初始化每个节点的FIB
+	# init FIB for each node
 	initial_Global_FIB(G,Global_FIB)
 	
-	'''
-	print('Global_FIB:')
-	print('-----------')
-	for di in Global_FIB:
-		print('%s:' % di)
-		print(Global_FIB[di])
-	print('---------------------')
-	print('FIB for each node:')
-	for ri in G.nodes(data=True):
-		print('%s:' % ri[1]['model'].label)
-		print(ri[1]['model'].FIB)
-	print('----------FIB initial end-----------')
-	'''
 	
 	# ----------------Exp1 running--------------------
 	
@@ -131,24 +88,12 @@ if __name__ == '__main__':
 				tem_node_hi = tem_line[:tem_line.index(',')]
 				tem_line = tem_line[tem_line.index(',')+1:-1]
 				
-				'''
-				tem_type = tem_line[:tem_line.index(',')]
-				tem_line = tem_line[tem_line.index(',')+1:]
-				tem_s = tem_line[:tem_line.index(',')]
-				tem_line = tem_line[tem_line.index(',')+1:]
-				tem_p = ()
-				while ',' in tem_line:
-					tem_p += (tem_line[:tem_line.index(',')],)
-					tem_line = tem_line[tem_line.index(',')+1:]
-				tem_p += (tem_line,)
-				'''
 				tem_req_name = ()
 				while ',' in tem_line:
 					tem_req_name += (tem_line[:tem_line.index(',')],)
 					tem_line = tem_line[tem_line.index(',')+1:]
 				tem_req_name += (tem_line,)
 				
-				#tem_req_name = (tem_type,tem_s,tem_p)
 				tem_req = ((tem_req_name,'i',tem_node_hi,0,0,0,0),)
 				print('tem_req:')
 				print(tem_req)
@@ -216,12 +161,6 @@ if __name__ == '__main__':
 					write.writerow(row)
 		
 	
-	'''
-	for ri in G.nodes(data=True):
-		print(ri[1]['model'].comp_CAP)
-		print(ri[1]['model'].cache_CAP)
-	'''
-	
 	if req_s_num > 0:
 		temp_s_num = req_s_num
 		accu_ct = 10 * size_para * temp_s_num * req_num_total
@@ -262,20 +201,18 @@ if __name__ == '__main__':
 		print('CPt_percent:')
 		print(CPt_percent)
 
-		#求均值
+		#Mean
 		CPt_percent_mean = np.mean(CPt_percent)
 
-		#求方差
+		#Var
 		CPt_percent_var = np.var(CPt_percent)
 
-		#求标准差
+		#Std
 		CPt_percent_std = np.std(CPt_percent,ddof=1)
 
-		print("平均值为：%.9f" % CPt_percent_mean)
-		print("方差为：%.9f" % CPt_percent_var)
-		print("样本标准差为:%.9f" % CPt_percent_std)
-
-		print("样本方差为:%.9f" % pow(CPt_percent_std, 2))
+		print("The mean is：%.9f" % CPt_percent_mean)
+		print("The var is：%.9f" % CPt_percent_var)
+		print("The std is:%.9f" % CPt_percent_std)
 		
-		print('最大值为：%.9f' % max(CPt_percent))
+		print('The max value is：%.9f' % max(CPt_percent))
 		

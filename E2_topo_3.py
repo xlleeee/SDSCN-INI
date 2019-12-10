@@ -1,4 +1,4 @@
-# topo_1, 基于base_topo_1生成的基本拓扑，生成服务、内容、请求分布，v_comp = 1, v_trans = 0.5
+# E2_topo_3, implement the SDSCN node engine in nodes constructed by base_topo_3.py
 
 import math
 import random
@@ -17,7 +17,7 @@ def set_CAP():
 		
 # __main__
 
-v_comp = 1e10 # CPU F_T = 10^10 cycle/s, assume 1cycle complete 1 Inst, thus, v_comp = 10^10 Inst/s
+v_comp = 1e10
 
 
 #建立拓扑
