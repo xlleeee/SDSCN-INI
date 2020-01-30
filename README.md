@@ -39,4 +39,4 @@ E3_NDNCloud_main.py
 
 ## Authors
 
-* **Xiaolu Li** - *Initial work* - [xlleeee](https://github.com/xlleeee)
+* **Xiaolu Li** -- [xlleeee](https://github.com/xlleeee)
