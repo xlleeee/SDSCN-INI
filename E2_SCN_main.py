@@ -1,4 +1,4 @@
-#E1_SDSCNINI_main
+#E2_SCN_main
 
 import math
 import random
@@ -9,8 +9,9 @@ import numpy as np
 import csv
 import sys
 
-from E1_SDSCNINI import *
-from Topo import *
+
+from E2_SCN import *
+from E2_topo import *
 
 
 req_s_num = int(sys.argv[1])
@@ -58,6 +59,7 @@ if __name__ == '__main__':
 	# produce parameter contents for each Pi
 	produce_ps()
 	
+	
 	# ----------------FIB initial --------------------
 	
 	Global_FIB = {}
@@ -66,13 +68,11 @@ if __name__ == '__main__':
 	initial_Global_FIB(G,Global_FIB)
 	
 	
-	# ----------------Exp1 running--------------------
-	
+	# ----------------Exp2 running--------------------
 	
 	for rj in G.nodes(data=True):
 		print(rj[1]['model'].node_queue)
 		print(rj[1]['model'].requests)
-	
 	
 	f = open('init_produce_requests.txt','r')
 	tem_line = f.readline()
@@ -148,10 +148,10 @@ if __name__ == '__main__':
 				f.write('\n')
 	f.close()
 	
-	style = 'SDSCN-INI, FC=' + str(req_s_num)
-	solution = 'SDSCN-INI'
+	style = 'SCN, FC=' + str(req_s_num)
+	solution = 'SCN'
 	FC = 'FC=' + str(req_s_num)
-	
+
 	with open('Results_delay_energy.csv','a') as f:
 		for ri in G.nodes(data=True):
 			if ri[1]['model'].node_type == 'h':
@@ -159,7 +159,7 @@ if __name__ == '__main__':
 					row = [str(s_dup),str(ci[6]*1000),str(ci[7]),style,solution,FC]
 					write = csv.writer(f)
 					write.writerow(row)
-		
+	
 	
 	if req_s_num > 0:
 		temp_s_num = req_s_num

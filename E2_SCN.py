@@ -1,4 +1,4 @@
-# Node engine: SDSCN-INI
+# Node engine: SCN
 
 import math
 import random
@@ -10,7 +10,7 @@ from Base_NDN import BaseNDN, get_FIBs, print_FIBs, initial_Global_FIB, update_G
 from Global_init_var import *
 
 
-class SDSCNINI(BaseNDN):
+class SCN(BaseNDN):
 	
 	local_pro_record = tuple()
 	service_set = tuple()
@@ -27,36 +27,38 @@ class SDSCNINI(BaseNDN):
 	def search_CS_i(self,cur_pac_name):
 		
 		print('ICECN_class \'search_CS_i\' print:')
-		if cur_pac_name[0] == 'F_F': # 'F_F'
+		if cur_pac_name[0] == 'F_F':
 			if cur_pac_name in self.CS:
 				tem_index = self.CS.index(cur_pac_name) + 1
 				return (cur_pac_name,self.CS[tem_index],cur_pac_name)
 			else:
 				return False
-		else: # 'P_F'
-			temp_l_1 = ('F_F',) + cur_pac_name[1:]
+		else:
+			
+			temp_l_1 = cur_pac_name
+			
+			if self.label == 'P1':
+				print('P1 CS:')
+				self.print__content_store()
+				print(temp_l_1)
+			
 			if temp_l_1 in self.CS:
+				print('yes!!')
 				tem_index = self.CS.index(temp_l_1) + 1
-				return (temp_l_1,self.CS[tem_index],temp_l_1)
+				print(self.CS[tem_index])
+				return (cur_pac_name,self.CS[tem_index],temp_l_1)
 			else:
-				temp_l_1 = cur_pac_name
 				
-				if temp_l_1 in self.CS:
-					tem_index = self.CS.index(temp_l_1) + 1
-					return (cur_pac_name,self.CS[tem_index],temp_l_1)
-				else:
-					
-					if len(cur_pac_name) > 3:
-						temp_l_1 = cur_pac_name[2:]
-						if temp_l_1 in self.CS:
-							tem_index = self.CS.index(temp_l_1) + 1
-							return (cur_pac_name,self.CS[tem_index],temp_l_1)
-					
-					return False
-			
-		
-	#def shortest_path_FIB(self,trans_content): # inherited from class BaseNDN
-			
+				if len(cur_pac_name) > 3:
+					temp_l_1 = cur_pac_name[2:]
+					if temp_l_1 in self.CS:
+						print('yes!!')
+						tem_index = self.CS.index(temp_l_1) + 1
+						print(self.CS[tem_index])
+						return (cur_pac_name,self.CS[tem_index],temp_l_1)
+				
+				return False
+
 	
 	def PIT_pro_i(self,cur_pac):
 		print('ICECN_class \'PIT_pro_i\' print:')
@@ -129,6 +131,7 @@ class SDSCNINI(BaseNDN):
 			else:
 				self.transfer = (((),cur_pac[0],cur_pac[1],self.label,cur_pac[3],cur_pac[4],cur_pac[5],cur_pac[6]),)
 		
+		
 		print('%s PIT:' % self.label)
 		print(self.PIT)
 		print('transfer:')
@@ -168,6 +171,7 @@ class SDSCNINI(BaseNDN):
 			
 			tem_index_1 = len(self.requests)
 			self.requests += tem_para_requests
+			
 			self.packet_arrive_set(tem_index_1,len(self.requests)) # inherited from parent class BaseNDN
 			
 			self.local_pro_record += (tem_local_pro,)
@@ -180,7 +184,7 @@ class SDSCNINI(BaseNDN):
 			delay_account = cur_pac[5] + 10*pre_size/self.v_comp
 			self.Computation_Task_record += 10*pre_size
 			back_pac = (cur_pac[0],'d',0,temp_size,cur_pac[4],delay_account,cur_pac[6],'local_process')
-			
+
 			l_node_queue = list(self.node_queue)
 			l_node_queue.insert(len(l_node_queue), back_pac)
 			self.node_queue = tuple(l_node_queue)
@@ -188,7 +192,7 @@ class SDSCNINI(BaseNDN):
 			
 		print('ICECN_class \'local_process_i\' end:')
 	
-		
+	
 	def local_process_d(self,trans_pac,G,Global_FIB):
 		print('ICECN_class \'local_process_d\' print:')
 		print('self.local_pro_record:')
@@ -215,7 +219,7 @@ class SDSCNINI(BaseNDN):
 				print(self.Computation_Task_record)
 
 				
-				if trans_pac[0][0] == 'P_F': # 'P_F', local processing
+				if trans_pac[0][0] == 'P_F': # 'P_F',local processing
 					
 					delay_account += 10 * size_of_pac/self.v_comp
 					
@@ -244,9 +248,9 @@ class SDSCNINI(BaseNDN):
 		print('self.local_pro_record:')
 		print(self.local_pro_record)
 		print(self.node_queue)
-		print('ICECN_class \'local_process_d\' end:')		
+		print('ICECN_class \'local_process_d\' end:')
 		
-		
+	
 	def pro_interest(self,cur_pac,G,Global_FIB):
 		print('ICECN_class \'pro_interest\' print:')
 		tem_search_CS_i = self.search_CS_i(cur_pac[0])
@@ -262,10 +266,9 @@ class SDSCNINI(BaseNDN):
 			
 		else:
 			self.PIT_pro_i(cur_pac)
-		print('ICECN_class \'pro_interest\' end:')
-					
-				
-		
+		print('ICECN_class \'pro_interest\' end:')		
+	
+	
 	def PIT_pro_d(self,cur_pac):
 		print('%s ICECN_class \'PIT_pro_d\' print:' % self.label)
 		print('self.PIT:')
@@ -290,7 +293,6 @@ class SDSCNINI(BaseNDN):
 					l_PIT.pop(tem_index-1)
 					l_PIT.pop(tem_index-1)
 					
-										
 				else:
 					
 					tem_l_PIT_node_set = list(l_PIT[tem_index])
@@ -308,6 +310,7 @@ class SDSCNINI(BaseNDN):
 						print(tem_l_PIT_node_set)
 					l_back_nodes_1 = tem_l_PIT_node_set
 					
+					
 					l_PIT[tem_index] = tem_l_PIT_index
 					
 				back_nodes_1 = tuple(l_back_nodes_1)
@@ -321,22 +324,6 @@ class SDSCNINI(BaseNDN):
 		print('back_nodes_1:')
 		print(back_nodes_1)
 		
-		if  cur_pac[0][0] == 'F_F':
-			
-			temp_pac_name = ('P_F',) + cur_pac[0][1:]
-			
-			if temp_pac_name in self.PIT:
-				tem_index = self.PIT.index(temp_pac_name) + 1
-				back_nodes_1 += self.PIT[tem_index]
-				l_PIT = list(self.PIT)
-				l_PIT.pop(tem_index-1)
-				l_PIT.pop(tem_index-1)
-				self.PIT = tuple(l_PIT)
-				print('dottt1')
-				l_back_nodes_1 = list(back_nodes_1)
-				while 'local_process' in l_back_nodes_1:
-					l_back_nodes_1.pop(l_back_nodes_1.index('local_process'))
-				back_nodes_1 = tuple(l_back_nodes_1)
 		
 		if back_nodes_1:
 			t_tem_transfer_1 = (back_nodes_1,) + cur_pac
@@ -350,8 +337,7 @@ class SDSCNINI(BaseNDN):
 		print('%s transfer_d33:' % self.label)
 		print(self.transfer)
 		print('ICECN_class \'PIT_pro_d\' end:')
-	
-	
+				
 	
 	def decide_cache(self,wait_cache_content,content_size,G,Global_FIB):
 		print('ICECN_class \'decide_cache\' print:')
@@ -375,7 +361,6 @@ class SDSCNINI(BaseNDN):
 		print('ICECN_class \'decide_cache\' end:')
 	
 	
-	
 	def local_onpath_process_d(self,cur_pac):
 		print('ICECN_class \'local_onpath_process_d\' print:')
 		
@@ -384,7 +369,8 @@ class SDSCNINI(BaseNDN):
 		print(self.Computation_Task_record)
 		self.Computation_Task_record += 10*cur_pac[3]
 		print(self.Computation_Task_record)
-				
+		
+		
 		proc_pac_name = ('F_F',) + cur_pac[0][1:]
 		
 		Inst = 10*cur_pac[3] # Instructions
@@ -392,7 +378,7 @@ class SDSCNINI(BaseNDN):
 		proc_pac_size = cur_pac[3]/1000
 		
 		pro_pac_energy = cur_pac[6]
-				
+		
 		proc_pac = (proc_pac_name,cur_pac[1],cur_pac[2],proc_pac_size,cur_pac[4],proc_pac_delay,pro_pac_energy)
 		
 		l_node_queue = list(self.node_queue)
@@ -406,46 +392,14 @@ class SDSCNINI(BaseNDN):
 	def pro_data(self,cur_pac,G,Global_FIB):
 		print('%s ICECN_class \'pro_data\' print:' % self.label)
 		
-		if (cur_pac[0][0] == 'P_F'):
-			temp_name = ('F_F',) + cur_pac[0][1:]
-			tem_search_CS_i = self.search_CS_i(temp_name)
-			print('dotttt')
-			print(cur_pac)
-			print('CS:')
-			self.print__content_store()
-			print('service:')
-			print(self.service_set)
-			if (self.node_type != 'h') and (tem_search_CS_i != False):
-								
-				proc_pac = (tem_search_CS_i[0],cur_pac[1],cur_pac[2],tem_search_CS_i[1],cur_pac[4],cur_pac[5],cur_pac[6])
-				print('proc_pac:')
-				print(proc_pac)
-				
-				l_node_queue = list(self.node_queue)
-				l_node_queue.insert(len(l_node_queue), proc_pac)
-				self.node_queue = tuple(l_node_queue)
-				
-			elif (cur_pac[0][1] in self.service_set):
-				energy_cache = self.decide_cache(cur_pac[0],cur_pac[3],G,Global_FIB)
-				cur_pac = cur_pac[:-1] + (cur_pac[6] + energy_cache,)
-				self.local_onpath_process_d(cur_pac)
-			
-			else:
-				self.PIT_pro_d(cur_pac)
-				if len(self.transfer[0][0]) != 0:
-					energy_cache = self.decide_cache(self.transfer[0][1],self.transfer[0][4],G,Global_FIB)
-					trans_pac = self.transfer[0][:-1] + (self.transfer[0][7] + energy_cache,)
-					self.transfer = (trans_pac,)
-		else:
-			self.PIT_pro_d(cur_pac)
-			if len(self.transfer[0][0]) != 0:
-				energy_cache = self.decide_cache(self.transfer[0][1],self.transfer[0][4],G,Global_FIB)
-				trans_pac = self.transfer[0][:-1] + (self.transfer[0][7] + energy_cache,)
-				self.transfer = (trans_pac,)
-				
+		self.PIT_pro_d(cur_pac)
+		if len(self.transfer[0][0]) != 0:
+			energy_cache = self.decide_cache(self.transfer[0][1],self.transfer[0][4],G,Global_FIB)
+			trans_pac = self.transfer[0][:-1] + (self.transfer[0][7] + energy_cache,)
+			self.transfer = (trans_pac,)
+		
 		print('ICECN_class \'pro_data\' end:')
-		
-		
+			
 	
 	def issue_init_interests(self,t_operation_parameter_requests):
 		for ti_re in t_operation_parameter_requests:
@@ -453,7 +407,7 @@ class SDSCNINI(BaseNDN):
 	
 		
 	#def pro_pac(self): # inherited from class BaseNDN
-		
+			
 	#def packet_arrive_set(self,range_start,range_stop): # inherited from class BaseNDN
 	
 	#def get_respond_delay(self,responded_content): # inherited from class BaseNDN
@@ -469,11 +423,13 @@ class SDSCNINI(BaseNDN):
 #def print_FIBs(): # inherited from class BaseNDN
 
 def initial_Global_FIB(G,Global_FIB):
+	
 	for ri in G.nodes(data=True):
 		if ri[1]['model'].node_type == 'p':
 			if len(ri[1]['model'].CS) != 0 :
 				for content_i in ri[1]['model'].CS:
 					if type(content_i) == tuple:
+						#print(content_i)
 						update_Global_FIB(ri[0], content_i,G,Global_FIB)
 					else:
 						continue

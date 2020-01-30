@@ -1,4 +1,4 @@
-#E1_SDSCNINI_main
+#E3_NDNCloud_main
 
 import math
 import random
@@ -9,25 +9,36 @@ import numpy as np
 import csv
 import sys
 
-from E1_SDSCNINI import *
-from Topo import *
+from E3_NDN import *
+from E3_Cloud import *
+from E2_topo import *
 
 
 req_s_num = int(sys.argv[1])
 
 s_dup = int(sys.argv[2])
 
+#Implement services centralizd at cloud
 def implement_service():
+	#Add cloud node
+	G.add_node('Cloud')
+	ri = 'R' + str(random.randint(1,50))
+	G.add_edges_from([('Cloud',ri)],weight = v_trans/10)
+	cloud = Cloud('Cloud','r',v_comp)
+	G.nodes['Cloud']['model'] = cloud
+	G.nodes['Cloud']['model'].comp_CAP = comp_CAP
+	G.nodes['Cloud']['model'].cache_CAP = cache_CAP
+	
 	f = open('init_implement_service.txt','r')
 	tem_line = f.readline()
 	while tem_line:
-		tem_node_r = tem_line[:tem_line.index(',')]
 		tem_s = tem_line[tem_line.index(',')+1:-1]
-		for ri in G.nodes(data=True):
-			if ri[1]['model'].label == tem_node_r:
-				ri[1]['model'].service_set += (tem_s,)
+		if (tem_s in G.nodes['Cloud']['model'].service_set) == False:
+			G.nodes['Cloud']['model'].service_set += (tem_s,)
+		
 		tem_line = f.readline()
 	f.close()
+
 
 def produce_ps():
 	f = open('init_produce_ps.txt','r')
@@ -45,7 +56,7 @@ def produce_ps():
 				ri[1]['model'].CS += (tem_c_name_full,tem_c_size)
 		tem_line = f.readline()
 	f.close()
-	
+		
 	
 # __main__
 
@@ -62,11 +73,10 @@ if __name__ == '__main__':
 	
 	Global_FIB = {}
 	
-	# init FIB for each node
 	initial_Global_FIB(G,Global_FIB)
 	
 	
-	# ----------------Exp1 running--------------------
+	# ----------------Exp3 running--------------------
 	
 	
 	for rj in G.nodes(data=True):
@@ -126,8 +136,6 @@ if __name__ == '__main__':
 			break
 		print('this round process end...')
 	
-
-
 	total_content_respond_num = 0
 	for ri in G.nodes(data=True):
 		if ri[1]['model'].node_type == 'h':
@@ -135,7 +143,6 @@ if __name__ == '__main__':
 			print(ri[1]['model'].content_respond)
 			total_content_respond_num += (len(ri[1]['model'].content_respond)-1)
 	print('the total content respond num is: % d' % total_content_respond_num)
-	
 	
 	print('----------------------------')
 	
@@ -148,10 +155,10 @@ if __name__ == '__main__':
 				f.write('\n')
 	f.close()
 	
-	style = 'SDSCN-INI, FC=' + str(req_s_num)
-	solution = 'SDSCN-INI'
+	style = 'NDN-Cloud, FC=' + str(req_s_num)
+	solution = 'NDN-Cloud'
 	FC = 'FC=' + str(req_s_num)
-	
+
 	with open('Results_delay_energy.csv','a') as f:
 		for ri in G.nodes(data=True):
 			if ri[1]['model'].node_type == 'h':
